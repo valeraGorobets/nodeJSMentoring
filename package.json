@@ -1,0 +1,30 @@
+{
+  "name": "nodejsmentoring",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "homework1-task1": "nodemon --exec babel-node Homework-1-FUNDAMENTAL_THEORY/task1/task1-reverse-input-value.js",
+    "homework1-task2": "nodemon --exec babel-node Homework-1-FUNDAMENTAL_THEORY/task2/task2-csv-to-txt.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valeraGorobets/nodeJSMentoring.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/valeraGorobets/nodeJSMentoring/issues"
+  },
+  "homepage": "https://github.com/valeraGorobets/nodeJSMentoring#readme",
+  "dependencies": {
+    "csvtojson": "2.0.10"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.7.4",
+    "@babel/core": "7.7.4",
+    "@babel/node": "7.7.4",
+    "@babel/preset-env": "7.7.4"
+  }
+}
