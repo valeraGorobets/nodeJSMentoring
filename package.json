@@ -33,6 +33,7 @@
     "@babel/node": "7.7.4",
     "@babel/preset-env": "7.7.4",
     "@types/hapi__joi": "16.0.4",
+    "tslint": "5.18.0",
     "ts-node-dev": "1.0.0-pre.44"
   }
 }

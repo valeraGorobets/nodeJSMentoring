@@ -1,30 +1,34 @@
-import * as Joi from '@hapi/joi';
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
-import { IUser } from "./users.model";
-import { HelloRequestSchema, querySchema } from "./schemas";
+import { buildAuthenticationSchema, validationSchema, IRequestSchema } from './schemas';
+import { IUser } from './users.model';
 
-const USERS: IUser[] = require('./users-list.json');
+let USERS: IUser[] = require('./users-list.json');
 
 const app = express();
 const port: number = 3000;
 const validator: ExpressJoiInstance = createValidator();
 
+app.use(express.json());
+
 app.get('/', (req, res) => res.send('Hello World!'));
 
+// GET: http://localhost:3000/user/5df5e546789efb5bdb39fa99
 app.get('/user/:id', (req, res) => {
 	const id: string = req.params.id;
 	const user: IUser = USERS.find((user: IUser) => user.id === id);
 	res.send(user || `Cant find user with id: ${id}`);
 });
 
+// GET: http://localhost:3000/getAutoSuggestUsers/?loginSubstring=ey&limit=2
 app.get('/getAutoSuggestUsers', (req, res) => {
 	const { loginSubstring = '', limit = 10 } = req.query;
 	// res.json({ loginSubstring, limit, params: req.query });
 	res.send(USERS.filter((user: IUser) => user.login.toLowerCase().includes(loginSubstring.toLowerCase())).slice(0, limit));
 });
 
-app.delete('/user/:id',(req, res) => {
+// DELETE: http://localhost:3000/user/5df5e546789efb5bdb39fa99
+app.delete('/user/:id', (req, res) => {
 	const id = req.params.id;
 	const userToDelete: IUser = USERS.find(user => user.id === id);
 	userToDelete.isDeleted = true;
@@ -33,27 +37,47 @@ app.delete('/user/:id',(req, res) => {
 		`Cant delete user with id: ${id}`);
 });
 
-app.get(
-	'/hello',
-	validator.query(querySchema),
-	(req: ValidatedRequest<HelloRequestSchema>, res) => {
-		// Woohoo, type safety and intellisense for req.query!
-		res.end(`Hello ${req.query.name}!`)
-	}
+// POST: http://localhost:3000/create
+// Body:
+// {
+// 	"id": "qwerty123",
+// 	"login": "valera",
+// 	"password": "hello1234",
+// 	"age": 45,
+// 	"isDeleted": false
+// }
+app.post('/create', validator.body(validationSchema), (req: ValidatedRequest<IRequestSchema>, res) => {
+		const newUser: IUser = req.body;
+		const storedUser: IUser = USERS.find((user: IUser) => user.id === newUser.id);
+		if (!storedUser) {
+			USERS.push(newUser);
+			res.send(`New user with id: ${newUser.id} added.`);
+		} else {
+			res.send(`User with id: ${newUser.id} already exists, use "POST: update" method to modify it.`);
+		}
+	},
 );
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// POST: http://localhost:3000/update
+// Body: updated age
+// {
+// 	"id": "5df5e546789efb5bdb39fa99",
+// 	"login": "DianaBenjamin",
+// 	"password": "ljp39bpboq",
+// 	"age": 39,
+// 	"isDeleted": false
+// }
+app.post('/update', validator.body(validationSchema), (req: ValidatedRequest<IRequestSchema>, res) => {
+		const updatedUser: IUser = req.body;
+		const storedUser: IUser = USERS.find((user: IUser) => user.id === updatedUser.id);
+		const { error } = buildAuthenticationSchema(storedUser.login, storedUser.password).validate(updatedUser, {allowUnknown: true});
+		if (error) {
+			res.status(400).send('Wrong login or password!');
+		} else {
+			USERS = USERS.map((user: IUser) => user.id === updatedUser.id ? updatedUser : user);
+			res.send(`User with id: ${updatedUser.id} updated`);
+		}
+	},
+);
 
-//[
-//  {
-//    'repeat(20)': {
-//      id: '{{objectId()}}',
-//      login: '{{firstName()}}{{surname()}}',
-//      password() {
-//  return Math.random().toString(36).slice(2);
-//},
-//  age: '{{integer(5, 150)}}',
-//  isDelited: false,
-//  }
-//}
-//]
+app.listen(port, () => console.log(`Users API listening on port ${port}!`));
