@@ -6,6 +6,7 @@
   "scripts": {
     "homework1-task1": "nodemon --exec babel-node Homework-1-FUNDAMENTAL_THEORY/task1/task1-reverse-input-value.js",
     "homework1-task2": "nodemon --exec babel-node Homework-1-FUNDAMENTAL_THEORY/task2/task2-csv-to-txt.js",
+    "homework2": "ts-node-dev --respawn --transpileOnly ./Homework-2-SERVICE_WITH_VALIDATION/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,12 +20,20 @@
   },
   "homepage": "https://github.com/valeraGorobets/nodeJSMentoring#readme",
   "dependencies": {
-    "csvtojson": "2.0.10"
+    "@hapi/joi": "16.1.8",
+    "@types/node": "12.12.11",
+    "csvtojson": "2.0.10",
+    "express": "4.17.1",
+    "express-joi-validation": "4.0.3",
+    "typescript": "3.7.2"
   },
   "devDependencies": {
     "@babel/cli": "7.7.4",
     "@babel/core": "7.7.4",
     "@babel/node": "7.7.4",
-    "@babel/preset-env": "7.7.4"
+    "@babel/preset-env": "7.7.4",
+    "@types/hapi__joi": "16.0.4",
+    "tslint": "5.18.0",
+    "ts-node-dev": "1.0.0-pre.44"
   }
 }
