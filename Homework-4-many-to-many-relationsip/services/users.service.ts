@@ -16,6 +16,7 @@ export class UsersService {
 		const user: IUser = await this.getUserById(id);
 		if (user && user.isdeleted === false) {
 			await this.db.deleteUserById(id);
+			await this.db.deleteUserById(id);
 			return true;
 		}
 		return false;

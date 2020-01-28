@@ -20,4 +20,12 @@ export class UserGroupDBAccessService {
 		const response = await this.client.query(request);
 		return response && response.rows[0];
 	}
+
+	public deleteUserFromGroup(userId: string) {
+		const request: string = `
+			DELETE FROM UserGroup
+			WHERE user_id=$1;
+		`;
+		return this.client.query(request, [userId]);
+	}
 }

@@ -1,23 +1,23 @@
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
 import { CONFIG } from './config';
-import { UserGroupDBAccessService } from './data-access/userGroupDBAccess.service';
 import { IGroup } from './models/group.model';
 import {
 	buildAuthenticationSchema,
 	groupValidationSchema,
 	usersValidationSchema,
-	IRequestSchema,
-	userGroupValidationSchema
+	userGroupValidationSchema,
+	IRequestSchema
 } from './models/schemas';
 import { IUserGroup } from './models/user-group.model';
 import { IUser } from './models/users.model';
 import { GroupsService } from './services/groups.service';
+import { UserGroupService } from './services/users-group.service';
 import { UsersService } from './services/users.service';
 
 const usersService: UsersService = new UsersService();
 const groupsService: GroupsService = new GroupsService();
-const userGroupService: UserGroupDBAccessService = new UserGroupDBAccessService();
+const userGroupService: UserGroupService = new UserGroupService();
 
 const app = express();
 const port: number = CONFIG.port;
@@ -45,6 +45,7 @@ app.get('/getAutoSuggestUsers', async (req, res) => {
 app.delete('/user/:id', async (req, res) => {
 	const id = req.params.id;
 	const result = await usersService.deleteUserByID(id);
+	await userGroupService.deleteUserFromGroup(id);
 	res.send(result ?
 		`User ${id} is deleted` :
 		`Cant delete user with id: ${id}`);
