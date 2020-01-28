@@ -1,8 +1,8 @@
-import { DbService } from '../data-access/db.service';
+import { UsersDBAccessService } from '../data-access/usersDBAccess.service';
 import { IUser } from '../models/users.model';
 
 export class UsersService {
-	private db: DbService = new DbService();
+	private db: UsersDBAccessService = new UsersDBAccessService();
 
 	public getUserById(id: string): Promise<IUser> {
 		return this.db.getUserById(id);

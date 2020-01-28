@@ -4,7 +4,7 @@ import { IUser } from '../models/users.model';
 
 const DB_URL: string = CONFIG.databaseURL;
 
-export class DbService {
+export class UsersDBAccessService {
 	private client = new Client(DB_URL);
 
 	constructor() {

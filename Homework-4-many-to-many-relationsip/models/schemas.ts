@@ -6,12 +6,18 @@ export interface IRequestSchema extends ValidatedRequestSchema {
 	[ContainerTypes.Query]: IUser;
 }
 
-export const validationSchema = Joi.object({
+export const usersValidationSchema = Joi.object({
 	id: Joi.string().required(),
 	login: Joi.string().required(),
 	password: Joi.string().required().regex(/[a-zA-Z]+/).regex(/[0-9]+/),
 	age: Joi.number().required().min(4).max(130),
 	isdeleted: Joi.boolean().required(),
+});
+
+export const groupValidationSchema = Joi.object({
+	id: Joi.string().required(),
+	name: Joi.string().required(),
+	permissions: Joi.array().items(Joi.string().valid('READ', 'WRITE', 'DELETE', 'SHARE', 'UPLOAD_FILES')),
 });
 
 export function buildAuthenticationSchema(login, password) {
