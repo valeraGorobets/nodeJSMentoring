@@ -20,6 +20,11 @@ export const groupValidationSchema = Joi.object({
 	permissions: Joi.array().items(Joi.string().valid('READ', 'WRITE', 'DELETE', 'SHARE', 'UPLOAD_FILES')),
 });
 
+export const userGroupValidationSchema = Joi.object({
+	groupId: Joi.string().required(),
+	userIds: Joi.array().required(),
+});
+
 export function buildAuthenticationSchema(login, password) {
 	return Joi.object({
 		login: Joi.string().equal(login),

@@ -1,14 +1,23 @@
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
 import { CONFIG } from './config';
+import { UserGroupDBAccessService } from './data-access/userGroupDBAccess.service';
 import { IGroup } from './models/group.model';
-import { buildAuthenticationSchema, groupValidationSchema, usersValidationSchema, IRequestSchema } from './models/schemas';
+import {
+	buildAuthenticationSchema,
+	groupValidationSchema,
+	usersValidationSchema,
+	IRequestSchema,
+	userGroupValidationSchema
+} from './models/schemas';
+import { IUserGroup } from './models/user-group.model';
 import { IUser } from './models/users.model';
 import { GroupsService } from './services/groups.service';
 import { UsersService } from './services/users.service';
 
 const usersService: UsersService = new UsersService();
 const groupsService: GroupsService = new GroupsService();
+const userGroupService: UserGroupDBAccessService = new UserGroupDBAccessService();
 
 const app = express();
 const port: number = CONFIG.port;
@@ -130,6 +139,24 @@ app.post('/updateGroup', validator.body(groupValidationSchema), async (req: Vali
 	const updatedGroup: IGroup = req.body;
 	await groupsService.updateGroup(updatedGroup);
 	res.send(`Group with id: ${updatedGroup.id} updated`);
+});
+
+// POST: http://localhost:3000/addUsersToGroup
+// Body:
+// {
+// 	"id": "5e302881630cd0a07b978220",
+// 	"name": "Developers",
+// 	"permissions": [
+// 	"READ",
+// 	"WRITE",
+// 	"DELETE",
+// 	"SHARE"
+// ]
+// }
+app.post('/addUsersToGroup', validator.body(userGroupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+	const userGroup: IUserGroup = req.body;
+	await userGroupService.addUsersToGroup(userGroup);
+	res.send(`Added users to group`);
 });
 
 app.listen(port, () => console.log(`Users API listening on port ${port}!`));
