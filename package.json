@@ -9,6 +9,7 @@
     "homework2": "ts-node-dev --respawn --transpileOnly ./Homework-2-SERVICE_WITH_VALIDATION/server.ts",
     "homework3": "ts-node-dev --respawn --transpileOnly ./Homework-3-DB_AND_LAYERED_ARCH/server.ts",
     "homework4": "ts-node-dev --respawn --transpileOnly ./Homework-4-many-to-many-relationsip/server.ts",
+    "homework5": "ts-node-dev --respawn --transpileOnly ./Homework-5-logging-and-error-handling/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
