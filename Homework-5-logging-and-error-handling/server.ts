@@ -1,5 +1,7 @@
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
+import * as expressWinston from 'express-winston';
+import * as winston from 'winston';
 import { CONFIG } from './config';
 import { IGroup } from './models/group.model';
 import {
@@ -25,24 +27,25 @@ const validator: ExpressJoiInstance = createValidator();
 
 app.use(express.json());
 
-app.get('/', (req, res) => res.send('Hello World!'));
+const router = express.Router();
+router.get('/', (req, res) => res.send('Hello World!'));
 
 // GET: http://localhost:3000/user/5df5e546789efb5bdb39fa99
-app.get('/user/:id', async (req, res) => {
+router.get('/user/:id', async (req, res) => {
 	const id: string = req.params.id;
 	const user: IUser = await usersService.getUserById(id);
 	res.send(user || `Cant find user with id: ${id}`);
 });
 
 // GET: http://localhost:3000/getAutoSuggestUsers/?loginSubstring=ey&limit=2
-app.get('/getAutoSuggestUsers', async (req, res) => {
+router.get('/getAutoSuggestUsers', async (req, res) => {
 	const { loginSubstring, limit } = req.query;
 	const users = await usersService.getAutoSuggestUsers(loginSubstring, limit);
 	res.send(users);
 });
 
 // DELETE: http://localhost:3000/user/5df5e546789efb5bdb39fa99
-app.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', async (req, res) => {
 	const id = req.params.id;
 	const result = await usersService.deleteUserByID(id);
 	await userGroupService.deleteUserFromGroup(id);
@@ -60,7 +63,7 @@ app.delete('/user/:id', async (req, res) => {
 // 	"age": 45,
 // 	"isdeleted": false
 // }
-app.post('/create', validator.body(usersValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+router.post('/create', validator.body(usersValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
 	const newUser: IUser = req.body;
 	const result: boolean = await usersService.createUser(newUser);
 	result ?
@@ -77,7 +80,7 @@ app.post('/create', validator.body(usersValidationSchema), async (req: Validated
 // 	"age": 39,
 // 	"isdeleted": false
 // }
-app.post('/update', validator.body(usersValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+router.post('/update', validator.body(usersValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
 	const updatedUser: IUser = req.body;
 	const storedUser: IUser = await usersService.getUserById(updatedUser.id);
 	const { error } = buildAuthenticationSchema(storedUser.login, storedUser.password).validate(updatedUser, { allowUnknown: true });
@@ -90,20 +93,20 @@ app.post('/update', validator.body(usersValidationSchema), async (req: Validated
 });
 
 // GET: http://localhost:3000/group/5e302881b7399b82ffe394c1
-app.get('/group/:id', async (req, res) => {
+router.get('/group/:id', async (req, res) => {
 	const id: string = req.params.id;
 	const group: IGroup = await groupsService.getGroupById(id);
 	res.send(group || `Cant find group with id: ${id}`);
 });
 
 // GET: http://localhost:3000/getAllGroups
-app.get('/getAllGroups', async (req, res) => {
+router.get('/getAllGroups', async (req, res) => {
 	const groups: IGroup[] = await groupsService.getAllGroups();
 	res.send(groups);
 });
 
 // DELETE: http://localhost:3000/group/5e302881b7399b82ffe394c1
-app.delete('/group/:id', async (req, res) => {
+router.delete('/group/:id', async (req, res) => {
 	const id = req.params.id;
 	const result = await groupsService.deleteGroupById(id);
 	res.send(`Group ${id} is deleted`);
@@ -116,7 +119,7 @@ app.delete('/group/:id', async (req, res) => {
 // 	"name": "newGroupName",
 // 	"permissions": ["READ", "WRITE"]
 // }
-app.post('/createGroup', validator.body(groupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+router.post('/createGroup', validator.body(groupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
 	const newGroup: IGroup = req.body;
 	const result: boolean = await groupsService.createGroup(newGroup);
 	result ?
@@ -136,7 +139,7 @@ app.post('/createGroup', validator.body(groupValidationSchema), async (req: Vali
 // 	"SHARE"
 // ]
 // }
-app.post('/updateGroup', validator.body(groupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+router.post('/updateGroup', validator.body(groupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
 	const updatedGroup: IGroup = req.body;
 	await groupsService.updateGroup(updatedGroup);
 	res.send(`Group with id: ${updatedGroup.id} updated`);
@@ -154,10 +157,22 @@ app.post('/updateGroup', validator.body(groupValidationSchema), async (req: Vali
 // 	"SHARE"
 // ]
 // }
-app.post('/addUsersToGroup', validator.body(userGroupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
+router.post('/addUsersToGroup', validator.body(userGroupValidationSchema), async (req: ValidatedRequest<IRequestSchema>, res) => {
 	const userGroup: IUserGroup = req.body;
 	await userGroupService.addUsersToGroup(userGroup);
 	res.send(`Added users to group`);
 });
+
+app.use(expressWinston.logger({
+	transports: [
+		new winston.transports.Console(),
+	],
+	format: winston.format.combine(
+		winston.format.colorize(),
+		winston.format.json(),
+	),
+}));
+
+app.use(router);
 
 app.listen(port, () => console.log(`Users API listening on port ${port}!`));
