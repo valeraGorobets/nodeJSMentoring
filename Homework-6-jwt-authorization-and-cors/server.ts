@@ -1,3 +1,4 @@
+import * as cors from 'cors';
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
 import { authenticationPath, buildAuthentication, checkToken } from './authenticate/authentication.service';
@@ -9,14 +10,13 @@ import {
 	groupValidationSchema,
 	usersValidationSchema,
 	userGroupValidationSchema,
-	IRequestSchema
+	IRequestSchema,
 } from './models/schemas';
 import { IUserGroup } from './models/user-group.model';
 import { IUser } from './models/users.model';
 import { GroupsService } from './services/groups.service';
 import { UserGroupService } from './services/users-group.service';
 import { UsersService } from './services/users.service';
-
 const usersService: UsersService = new UsersService();
 const groupsService: GroupsService = new GroupsService();
 const userGroupService: UserGroupService = new UserGroupService();
@@ -27,6 +27,7 @@ const validator: ExpressJoiInstance = createValidator();
 
 app.use(express.json());
 app.use(checkToken);
+app.use(cors());
 
 const router = express.Router();
 router.get('/', (req, res) => res.send('Hello World!'));
@@ -237,4 +238,4 @@ app.use((err, req, res) => {
 	handleError(err, res, 500);
 });
 
-app.listen(port, () => console.log(`Users API listening on port ${port}!`));
+app.listen(port, () => console.log(`CORS-enabled Users API listening on port ${port}!`));

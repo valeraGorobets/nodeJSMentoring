@@ -26,6 +26,7 @@
   "dependencies": {
     "@hapi/joi": "16.1.8",
     "@types/node": "12.12.11",
+    "cors": "2.8.5",
     "csvtojson": "2.0.10",
     "express": "4.17.1",
     "express-joi-validation": "4.0.3",
