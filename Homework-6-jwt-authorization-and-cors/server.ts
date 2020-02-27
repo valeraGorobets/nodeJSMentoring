@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
+import { authenticationPath, buildAuthentication, checkToken } from './authenticate/authentication.service';
 import { CONFIG } from './config';
 import { errorLogger, handleError, logger, winstonErrorMessage } from './error-handling';
 import { IGroup } from './models/group.model';
@@ -25,9 +26,12 @@ const port: number = CONFIG.port;
 const validator: ExpressJoiInstance = createValidator();
 
 app.use(express.json());
+app.use(checkToken);
 
 const router = express.Router();
 router.get('/', (req, res) => res.send('Hello World!'));
+
+router.post(authenticationPath, buildAuthentication(usersService));
 
 // GET: http://localhost:3000/user/5df5e546789efb5bdb39fa99
 router.get('/user/:id', async (req, res) => {
