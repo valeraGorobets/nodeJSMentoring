@@ -26,8 +26,8 @@ const port: number = CONFIG.port;
 const validator: ExpressJoiInstance = createValidator();
 
 app.use(express.json());
-app.use(cors());
 app.use(checkToken);
+app.use(cors());
 
 const router = express.Router();
 router.get('/', (req, res) => res.send('Hello World!'));
