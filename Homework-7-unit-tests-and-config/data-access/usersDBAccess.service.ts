@@ -1,8 +1,7 @@
 import { Client } from 'pg';
-import { CONFIG } from '../config';
 import { IUser } from '../models/users.model';
 
-const DB_URL: string = CONFIG.databaseURL;
+const DB_URL: string = process.env.DB_URL;
 
 export class UsersDBAccessService {
 	private client = new Client(DB_URL);

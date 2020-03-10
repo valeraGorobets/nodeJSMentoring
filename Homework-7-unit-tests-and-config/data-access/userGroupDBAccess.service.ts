@@ -1,9 +1,8 @@
 import { Client } from 'pg';
-import { CONFIG } from '../config';
 import { IUserGroup } from '../models/user-group.model';
 import { IUser } from '../models/users.model';
 
-const DB_URL: string = CONFIG.databaseURL;
+const DB_URL: string = process.env.DB_URL;
 
 export class UserGroupDBAccessService {
 	private client = new Client(DB_URL);

@@ -1,8 +1,7 @@
 import { Client } from 'pg';
-import { CONFIG } from '../config';
 import { IGroup } from '../models/group.model';
 
-const DB_URL: string = CONFIG.databaseURL;
+const DB_URL: string = process.env.DB_URL;
 
 export class GroupsDBAccessService {
 	private client = new Client(DB_URL);
