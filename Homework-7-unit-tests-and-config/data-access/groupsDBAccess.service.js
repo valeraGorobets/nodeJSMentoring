@@ -1,17 +1,15 @@
 import { Client } from 'pg';
-import { IGroup } from '../models/group.model';
 
-const DB_URL: string = process.env.DB_URL;
+const DB_URL = process.env.DB_URL;
 
 export class GroupsDBAccessService {
-	private client = new Client(DB_URL);
-
 	constructor() {
+		this.client = new Client(DB_URL);
 		this.client.connect();
 	}
 
-	public async getGroupById(id: string): Promise<IGroup> {
-		const request: string = `
+	async getGroupById(id) {
+		const request = `
 			SELECT * FROM Groups
 			WHERE id=$1;
 		`;
@@ -19,32 +17,32 @@ export class GroupsDBAccessService {
 		return response && response.rows[0];
 	}
 
-	public async getAllGroups(): Promise<IGroup[]> {
-		const request: string = `
+	async getAllGroups() {
+		const request = `
 			SELECT * FROM Groups;
 		`;
 		const response = await this.client.query(request);
 		return response && response.rows;
 	}
 
-	public deleteGroupById(id: string) {
-		const request: string = `
+	deleteGroupById(id) {
+		const request = `
 			DELETE FROM Groups
 			WHERE id=$1;
 		`;
 		return this.client.query(request, [id]);
 	}
 
-	public createGroup({ id, name, permissions }: IGroup) {
-		const request: string = `
+	createGroup({ id, name, permissions }) {
+		const request = `
 			INSERT INTO Groups(id,name,permissions)
 			VALUES($1,$2,$3);
 		`;
 		return this.client.query(request, [id, name, permissions]);
 	}
 
-	public updateGroup({ id, name, permissions }: IGroup) {
-		const request: string = `
+	updateGroup({ id, name, permissions }) {
+		const request = `
 			UPDATE Groups
 			SET name = $2,
 				permissions = $3

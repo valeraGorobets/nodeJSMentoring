@@ -12,7 +12,7 @@
     "homework5": "ts-node-dev --respawn --transpileOnly ./Homework-5-logging-and-error-handling/server.ts",
     "homework6": "ts-node-dev --respawn --transpileOnly ./Homework-6-jwt-authorization-and-cors/server.ts",
     "homework7": "ts-node-dev --respawn --transpileOnly ./Homework-7-unit-tests-and-config/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -44,7 +44,8 @@
     "@babel/node": "7.7.4",
     "@babel/preset-env": "7.7.4",
     "@types/hapi__joi": "16.0.4",
-    "tslint": "5.18.0",
-    "ts-node-dev": "1.0.0-pre.44"
+    "jest": "25.1.0",
+    "ts-node-dev": "1.0.0-pre.44",
+    "tslint": "5.18.0"
   }
 }
