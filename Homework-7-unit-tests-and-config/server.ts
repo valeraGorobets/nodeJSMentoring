@@ -1,8 +1,8 @@
+require('dotenv').config();
 import * as cors from 'cors';
 import * as express from 'express';
 import { createValidator, ExpressJoiInstance, ValidatedRequest } from 'express-joi-validation';
 import { authenticationPath, buildAuthentication, checkToken } from './authenticate/authentication.service';
-import { CONFIG } from './config';
 import { errorLogger, handleError, logger, winstonErrorMessage } from './error-handling';
 import { IGroup } from './models/group.model';
 import {
@@ -22,12 +22,12 @@ const groupsService: GroupsService = new GroupsService();
 const userGroupService: UserGroupService = new UserGroupService();
 
 const app = express();
-const port: number = CONFIG.port;
+const port: number = parseInt(process.env.PORT, 10) || 3000;
 const validator: ExpressJoiInstance = createValidator();
 
 app.use(express.json());
-app.use(cors());
 app.use(checkToken);
+app.use(cors());
 
 const router = express.Router();
 router.get('/', (req, res) => res.send('Hello World!'));
